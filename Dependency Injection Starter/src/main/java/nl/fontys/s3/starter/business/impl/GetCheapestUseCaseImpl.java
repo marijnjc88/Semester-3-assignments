@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 import nl.fontys.s3.starter.persistence.TickerPriceRepository;
 import nl.fontys.s3.starter.domain.TickerPrice;
 
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.math.BigDecimal;
 
 @Service
 public class GetCheapestUseCaseImpl implements GetCheapestUseCase {
@@ -19,22 +21,26 @@ public class GetCheapestUseCaseImpl implements GetCheapestUseCase {
         this.tickerPriceRepositories = tickerPriceRepositories;
     }
 
+    private Double roundToDecimals(Double value, int decimals) {
+        BigDecimal bigDecimal = new BigDecimal(Double.toString(value));
+        bigDecimal = bigDecimal.setScale(decimals, RoundingMode.HALF_UP);
+        return bigDecimal.doubleValue();
+    }
+
     @Override
     public GetCheapestResponse getCheapest(GetCheapestRequest request) {
         List<TickerPrice> prices = new ArrayList<>();
+
         // At what index the lowest price is listed
-        int index = 0;
-        // What the lowest price is
-        double lowest = 0;
+        int index = -1;
         // Loop through all TickerPriceRepositories
         for(int i = 0; i < tickerPriceRepositories.size(); i++)
         {
             // Add the price to the prices list
             prices.add(tickerPriceRepositories.get(i).getCurrentPrice(request.getFromCurrency(), request.getToCurrency()));
             // Check if it is the lowest price
-            if (lowest == 0 || prices.get(i).getPrice() < lowest) {
-                // If it is the lowest price, save the index of the price in the list to index, and save the new lowest price to lowest
-                lowest = prices.get(i).getPrice();
+            if (index == -1 || prices.get(i).getPrice() < prices.get(index).getPrice()) {
+                // If it is the lowest price, save the index of the price in the list to index
                 index = i;
             }
         }
@@ -43,14 +49,15 @@ public class GetCheapestUseCaseImpl implements GetCheapestUseCase {
         List<TickerPrice> difs = new ArrayList<>();
         for (int i = 0; i < prices.size(); i++) {
             if (i != index) {
+                Double priceDif = prices.get(i).getPrice() - prices.get(index).getPrice();
                 difs.add(TickerPrice.builder()
                         .exchangeName(prices.get(i).getExchangeName())
-                        .price(prices.get(i).getPrice() - lowest)
+                        .price(roundToDecimals(priceDif, 3))
                         .build());
             }
         }
 
-        // Return GetCheapestResponse with the necessary components
+        // Return GetCheapestResponse with the necessary parameters
         return GetCheapestResponse.builder()
                 .fromCurrency(request.getFromCurrency())
                 .toCurrency(request.getToCurrency())
