@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class FakeCountryRepositoryImpl implements CountryRepository {
@@ -43,9 +44,11 @@ public class FakeCountryRepositoryImpl implements CountryRepository {
 
     @Override
     public CountryEntity save(CountryEntity country) {
-        country.setId(NEXT_ID);
-        NEXT_ID++;
-        this.savedCountries.add(country);
+        if (country.getId() == null) {
+            country.setId(NEXT_ID);
+            NEXT_ID++;
+            this.savedCountries.add(country);
+        }
         return country;
     }
 
@@ -57,5 +60,17 @@ public class FakeCountryRepositoryImpl implements CountryRepository {
     @Override
     public int count() {
         return this.savedCountries.size();
+    }
+
+    @Override
+    public Optional<CountryEntity> getById(long countryId) {
+        return this.savedCountries.stream()
+                .filter(countryEntity -> countryEntity.getId().equals(countryId))
+                .findFirst();
+    }
+
+    @Override
+    public void deleteById(long countryId) {
+        this.savedCountries.removeIf(countryEntity -> countryEntity.getId().equals(countryId));
     }
 }

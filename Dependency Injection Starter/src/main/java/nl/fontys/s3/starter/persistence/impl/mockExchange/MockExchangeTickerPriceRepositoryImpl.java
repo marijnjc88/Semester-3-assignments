@@ -4,7 +4,7 @@ import nl.fontys.s3.starter.domain.TickerPrice;
 import nl.fontys.s3.starter.persistence.TickerPriceRepository;
 import org.springframework.stereotype.Repository;
 
-// Always returns a price of 100 000
+// Always returns a price of 100000.0
 @Repository
 public class MockExchangeTickerPriceRepositoryImpl implements TickerPriceRepository {
     @Override
