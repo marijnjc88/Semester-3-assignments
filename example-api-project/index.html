@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <div style="display: flex; flex-direction: column; align-items: center;">
+        <h2>Open API getter</h2>
+
+        <p id="messages" style="color: red;"></p>
+        <p id="currentApiName"></p>
+        <p id="currentApiDescription"></p>
+        <button id="nextApiBtn">Next Api</button>
+    </div>
+
+    <div>
+
+    </div>
+
+    <script>
+        const handleFetchError = (error) => {
+            console.error(error);
+            document.getElementById('messages').innerHTML = 'Error fetching API.';
+        };
+
+        const displayApi = (api) => {
+            console.log(api);
+            const currentApiName = document.getElementById('currentApiName');
+            currentApiName.innerHTML = api.entries[0].API;
+            const currentApiDescription = document.getElementById('currentApiDescription');
+            currentApiDescription.innerHTML = api.entries[0].Description;
+        }
+
+        const getApi = () => {
+            fetch('https://api.publicapis.org/random')
+            .then(response => response.json())
+            .then(displayApi)
+            .catch(handleFetchError)
+        };
+
+        document.getElementById('nextApiBtn')
+            .addEventListener("click", getApi);
+
+        getApi();
+    </script>
+
+</body>
+
+</html>
