@@ -16,7 +16,8 @@ function UserPage() {
   }
 
   useEffect(() => {
-  });
+    fetchUsernames();
+  }, []);
 
   return (
     <div>

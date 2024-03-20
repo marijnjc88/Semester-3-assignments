@@ -11,6 +11,7 @@ function App() {
         <NavBar />
         <Routes>
           <Route path="/" element={<TodoPage />} />
+          <Route path="/user" element={<UserPage />} />
         </Routes>
       </Router>
     </div>

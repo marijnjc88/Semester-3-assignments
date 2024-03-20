@@ -1,5 +1,6 @@
 import React from "react"
 import styles from './NavBar.module.css'
+import { NavLink } from "react-router-dom"
 
 function NavBar() {
 
@@ -22,8 +23,11 @@ function NavBar() {
                 {links.map(link => {
                     return (
                         <li key={link.id}>
-                            {/* Add NavLink here */}
-                            {link.text}
+                            {
+                                <NavLink to={link.path}>
+                                    {link.text}
+                                </NavLink>
+                            }
                         </li>
                     )
                 })}

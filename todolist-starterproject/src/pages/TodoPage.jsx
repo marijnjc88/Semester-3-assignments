@@ -23,22 +23,53 @@ function TodoPage() {
         },
     ]
 
+    const [id, setId] = useState(4);
     const [todoItems, setToDoItems] = useState(todoItemsData);
 
     const addItem = title => {
         const newItem = {
-            id: 4,
+            id: id,
             title: title,
             done: false
         };
+        setId(id + 1);
         setToDoItems([...todoItems, newItem]);
     }
+
+    const deleteItem = id => {
+        const updatedItems = todoItems.filter((item) => item.id !== id);
+        setToDoItems(updatedItems);
+    }
+
+    const handleCheck = (id) => {
+        const updatedItems = todoItems.map((item) =>
+            item.id === id ? { ...item, done: !item.done } : item
+        );
+        setToDoItems(updatedItems);
+    }
+
+    const completedTasks = todoItems.filter(item => item.done).length;
+    const totalTasks = todoItems.length;
+    const percentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 100;
 
     return (
         <div className="container">
             <div className="inner">
-                <InputItem addItem={addItem} />
-                <TodoList todoItems={todoItems} />
+                <InputItem
+                    addItem = {addItem}
+                />
+                <div>
+                    {totalTasks === 0 ? (
+                        <p>There are no tasks</p>
+                    ) : (
+                        <p>Tasks completed: {completedTasks}/{totalTasks}, {percentage.toFixed(1)}%</p>
+                    )}
+                </div>
+                <TodoList
+                    todoItems = {todoItems}
+                    onDelete = {deleteItem}
+                    onCheck = {handleCheck}
+                />
             </div>
         </div>
     )
